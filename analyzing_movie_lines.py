@@ -2,7 +2,7 @@ import enchant
 
 english_words = enchant.Dict("en_US")
 
-f = open('movie_lines.txt','r')
+f = open('data/movie_lines.txt','r')
 content = f.readlines()
 f.close()
 
