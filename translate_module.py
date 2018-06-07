@@ -67,6 +67,7 @@ def translate_to_pirate(input):
         sentence = ''.join(words)
     else:
         random_start = random.choice(exclamations)
+        if len(words) > 0: random_start += ' '
         sentence = random_start + ''.join(words)
 
     sentence.replace("\\","")
