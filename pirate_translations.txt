@@ -1,0 +1,74 @@
+hello,ahoy
+Hello,Ahoy
+friend,matey
+friends,hearties
+tipsy,squiffy
+my,me
+you,ye
+yes,aye
+yeah,aye
+treasure,booty
+reward,bounty
+ship,schooner
+boat,schooner
+song,galley
+toilet,head
+bottle,black jack
+flag,jolly roger
+girl,lassie
+boy,laddie
+woman,wench
+women,wenches
+oldie,old salt
+steal,pillage
+plunder,pillage
+police,privateer
+alcohol,rum
+sailor,seadog
+mop,swab
+sleep,take a caulk
+nap,caulk
+drunk,three sheets to the wind
+cheat,hornswaggle
+cup,black jack
+death,davy jones' locker
+sword,cutlass
+conference,parley
+discussion,parley
+mercy,quarter
+mother, dear ol' mum
+for,fer
+okay,kay
+something,somethin'
+never, ne'e'r
+hire,'ire
+your,yer
+want,have a fierce fire in me belly for
+food,grub
+captain,cap'n
+boss,cap'n
+lunch,grub
+dinner,grub
+fool,bilge rat
+understand,savvy
+brave,swashbuckler
+coins,pieces o' eight
+coin,piece o' eight
+stop,belay
+coward,lily-livered
+goodbye,fair winds
+there,thar
+going,goin'
+starving,starvin'
+to,t'
+back,aft
+and,an'
+good luck, fair winds
+pretty,proud
+remember,rememba
+Get out of my way,gangway
+a shot,clap  o' thunder
+best friend,best bucko
+on it,aye aye
+old man,old salt
+kill him,blow the man down
