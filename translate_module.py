@@ -17,8 +17,10 @@ f.close()
 
 for line_content in content:
     line_content = line_content.rstrip()
-    english_phrase,pirate_phrase = line_content.split(',')
-    pirate_phrase_dictionary[' ' + english_phrase ] = ' ' + pirate_phrase
+    parts = line_content.split(',')
+    english_phrase = parts[0]
+    pirate_phrase = ','.join(parts[1:])
+    pirate_phrase_dictionary[english_phrase ] = pirate_phrase
 
 # Read words to be looked up and make a dictionary
 f = open('word_translations.txt','r')
@@ -29,8 +31,7 @@ f.close()
 for line_content in content:
     line_content = line_content.rstrip()
     english_word,pirate_words = line_content.split(',')
-    pirate_words_dictionary[english_word ] = pirate_words
-
+    pirate_words_dictionary[english_word] = pirate_words
 
 
 # Read exclamations and build a list of them
@@ -42,27 +43,30 @@ f.close()
 for line_content in content:
     line_content = line_content.rstrip()
     exclamations.append(line_content)
-
+print(pirate_phrase_dictionary)
 def replace_phrases(input):
-    for key in pirate_tongue_dictionary.keys():
-        output = re.sub(key,pirate_tongue_dictionary[key],input.lower())
-    return output
+    for key in pirate_phrase_dictionary.keys():
+        input = re.sub(key,pirate_phrase_dictionary[key],input.lower())
+        # print(output)
+    return input
 
 def replace_words(input):
     words = re.split('(\W+)', input)
     pirate_words = []
     for word in words:
         if word in pirate_words_dictionary.keys():
+            # print(word)
+            # print("Replaced to",pirate_words_dictionary[word])
             pirate_words.append(pirate_words_dictionary[word])
         else:
             pirate_words.append(word)
 
-    for j in range(len(words)):
-        word = words[j]
+    for j in range(len(pirate_words)):
+        word = pirate_words[j]
         if 'ing' in word:
             if random.uniform(0,1) < 0.7:
-                words[j] = re.sub("ing","in'",word)
-    return words
+                pirate_words[j] = re.sub("ing","in'",word)
+    return pirate_words
 
 def add_exclamations(words):
     if words[0] == 'ahoy':
