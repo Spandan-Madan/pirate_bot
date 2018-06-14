@@ -1,7 +1,11 @@
+import os
 import re
 import sys
 import pickle
 import random
+
+os.chdir(os.path.dirname(os.path.abspath(__file__))) # Set working directory
+
 # f = open('pirate_tongue.p','rb')
 # pirate_tongue_dictionary = pickle.load(f)
 # f.close()
@@ -73,7 +77,7 @@ def add_exclamations(words):
         sentence = ''.join(words)
     else:
         random_start = random.choice(exclamations)
-        sentence = random_start + ''.join(words)
+        sentence = random_start + ' ' + ''.join(words)
 
     sentence.replace("\\","")
     return sentence
