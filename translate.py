@@ -2,7 +2,7 @@ import re
 import sys
 import pickle
 import random
-from transate_module import translate_to_pirate
+from translate_module import translate_to_pirate
 # f = open('pirate_tongue.p','rb')
 # pirate_tongue_dictionary = pickle.load(f)
 # f.close()

@@ -1,0 +1,21 @@
+from selenium import webdriver
+from selenium.webdriver.support.ui import Select
+
+driver = webdriver.Chrome()
+driver.get('https://merge.microsoft.com/#/bookconnector')
+email_box = driver.find_element_by_name("loginfmt")
+email_box.send_keys("t-spmada@microsoft.com")
+submit = driver.find_element_by_id("idSIButton9")
+submit.click()
+accept_permissions = driver.find_element_by_id("idSIButton9")
+accept_permissions.click()
+pm_trip_button = driver.find_element_by_id("PMTripTab")
+pm_trip_button.click()
+
+
+select = Select(driver.find_element_by_id('routeSelect'))
+select.select_by_value("object:603")
+radiobutton = driver.find_element_by_id("trip-radio-8")
+radiobutton.click()
+final_submit = driver.find_element_by_id("bookConnectorButton")
+final_submit.click()
