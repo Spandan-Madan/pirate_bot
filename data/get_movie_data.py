@@ -1,3 +1,4 @@
+import argparse
 import nltk.data
 import re
 import urllib2
@@ -55,19 +56,47 @@ def get_sentences(url):
     sentences = tokenizer.tokenize(text)
     return sentences
 
-if __name__ == '__main__':
-    urls = get_all_pirate_movie_urls()
-    sentence_pairs = []
+def filter(text, filter_words=None):
+    if filter_words == None:
+        with open('filter_list.txt', 'r') as filter_file:
+            filter_words = set(filter_file.readlines())
+    return not any(word.lower() in text.lower() for word in filter_words)
 
-    # Create one large aggregate list of Q/A pairs
+def get_all_sentences(urls):
+    return [sentence for url in urls for sentence in get_sentences(url) if filter(sentence)]
+
+def get_all_sentence_pairs(urls):
+    sentence_pairs = []
     for url in urls:
         sentences = get_sentences(url)
         sentence_pairs += zip(sentences, sentences[1:])
 
-    # Write Q/A pairs to text file in tab-delimted format
-    text = 'line\tresponse\n'
-    for line, response in sentence_pairs:
-        text += '{}\t{}\n'.format(line, response)
+    # Remove pairs containing filter words
+    sentence_pairs = [(line, response) for (line, response) in sentence_pairs if filter(line) and filter(response)]
+    return sentence_pairs
 
-    with open('movie_lines.txt', 'w') as text_file:
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-p', '--pairs', action='store_true')
+    args = parser.parse_args()
+    urls = get_all_pirate_movie_urls()
+    text = ""
+        
+    if args.pairs:
+        print "pairs"
+        sentence_pairs = get_all_sentence_pairs(urls)
+
+        # Combine Q/A pairs in tab-delimted format
+        text = 'line\tresponse\n'
+        for line, response in sentence_pairs:
+            text += '{}\t{}\n'.format(line, response)
+    else:
+        print "not pairs"
+        sentences = get_all_sentences(urls)
+        text = '\n'.join(sentences)
+
+    # Write to text file
+    filename = 'movie_line_pairs.txt' if args.pairs else 'movie_lines.txt'
+    with open(filename, 'w') as text_file:
         text_file.write(text)
