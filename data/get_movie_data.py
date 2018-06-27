@@ -1,33 +1,73 @@
 import nltk.data
+import re
 import urllib2
 
-# Load movie script URLs
-with open('movie_urls.txt', 'r') as file:
-	urls = [line.strip() for line in file.readlines()]
+def load_saved_movie_urls(filename='movie_urls.txt'):
+    with open(filename, 'r') as file:
+        urls = set([line.strip() for line in file.readlines()])
+    return urls
+
+def query_movie_urls_for_keyword(keyword):
+    pattern = r'<a href="([^"]*)" class="script-list-item"'
+    movie_urls = set()
+    page_number = 1
+
+    while True:
+        query_url = 'https://www.springfieldspringfield.co.uk/movie_scripts.php?search={}&page={}'.format(keyword, page_number)
+        text = urllib2.urlopen(query_url).read()
+        paths = re.findall(pattern, text)
+        if len(paths) > 0:
+            movie_urls.update(['https://www.springfieldspringfield.co.uk{}'.format(path) for path in paths])
+        else:
+            break
+        page_number += 1
+
+    return movie_urls
+
+def query_movie_urls(keywords):
+    movie_urls = set()
+    for keyword in keywords:
+        movie_urls.update(query_movie_urls_for_keyword(keyword))
+    return movie_urls
+
+def get_all_pirate_movie_urls():
+    keywords = ['pirate', 'pirates', 'treasure', 'ship', 'buccaneer', 'captain', 'sea', 'gold',
+        'deep', 'ocean', 'jaws', 'blackbeard', 'yellowbeard', 'pan', 'viking', 'vikings', 'sails',
+        'corsair']
+    urls = query_movie_urls(keywords)
+    urls.update(load_saved_movie_urls())
+    return urls
 
 def get_sentences(url):
-	# Get HTML
-	response = urllib2.urlopen(url)
-	html = response.read()
+    # Get HTML
+    response = urllib2.urlopen(url)
+    html = response.read()
 
-	# Parse HTML into plain text
-	text = html.split('<div class="scrolling-script-container">')[1].split('</div>')[0]
-	text = text.replace("<br>", "")
-	text = text.replace(" - ", " ")
-	text = text.replace("\'", "'")
-	text = text.lstrip()
+    # Parse HTML into plain text
+    text = html.split('<div class="scrolling-script-container">')[1].split('</div>')[0]
+    text = text.replace("<br>", "")
+    text = text.replace(" - ", " ")
+    text = text.replace("\'", "'")
+    text = text.lstrip()
 
-	# Parse text into a list of sentences
-	tokenizer = nltk.data.load('tokenizers/punkt/english.pickle')
-	sentences = tokenizer.tokenize(text)
-	return sentences
+    # Parse text into a list of sentences
+    tokenizer = nltk.data.load('tokenizers/punkt/english.pickle')
+    sentences = tokenizer.tokenize(text)
+    return sentences
 
-# Create one large concatenated list of all sentences
-sentences = []
-for url in urls:
-	sentences += get_sentences(url)
+if __name__ == '__main__':
+    urls = get_all_pirate_movie_urls()
+    sentence_pairs = []
 
-# Write sentences to text file
-text = '\n'.join(sentences)
-with open("movie_lines.txt", "w") as text_file:
-    text_file.write(text)
+    # Create one large aggregate list of Q/A pairs
+    for url in urls:
+        sentences = get_sentences(url)
+        sentence_pairs += zip(sentences, sentences[1:])
+
+    # Write Q/A pairs to text file in tab-delimted format
+    text = 'line\tresponse\n'
+    for line, response in sentence_pairs:
+        text += '{}\t{}\n'.format(line, response)
+
+    with open('movie_lines.txt', 'w') as text_file:
+        text_file.write(text)
