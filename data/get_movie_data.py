@@ -3,7 +3,7 @@ import nltk.data
 import re
 import urllib2
 
-def load_saved_movie_urls(filename='movie_urls.txt'):
+def load_movie_urls(filename='movie_urls.txt'):
     with open(filename, 'r') as file:
         urls = set([line.strip() for line in file.readlines()])
     return urls
@@ -32,11 +32,16 @@ def query_movie_urls(keywords):
     return movie_urls
 
 def get_all_pirate_movie_urls():
+    # Get set of pirate movie URLs
     keywords = ['pirate', 'pirates', 'treasure', 'ship', 'buccaneer', 'captain', 'sea', 'gold',
         'deep', 'ocean', 'jaws', 'blackbeard', 'yellowbeard', 'pan', 'viking', 'vikings', 'sails',
         'corsair']
     urls = query_movie_urls(keywords)
-    urls.update(load_saved_movie_urls())
+    urls.update(load_movie_urls())
+
+    # Remove any banned urls
+    banned_urls = load_movie_urls('banned_movie_urls.txt')
+    urls -= banned_urls
     return urls
 
 def get_sentences(url):
@@ -56,14 +61,8 @@ def get_sentences(url):
     sentences = tokenizer.tokenize(text)
     return sentences
 
-def filter(text, filter_words=None):
-    if filter_words == None:
-        with open('filter_list.txt', 'r') as filter_file:
-            filter_words = set(filter_file.readlines())
-    return not any(word.lower() in text.lower() for word in filter_words)
-
 def get_all_sentences(urls):
-    return [sentence for url in urls for sentence in get_sentences(url) if filter(sentence)]
+    return [sentence for url in urls for sentence in get_sentences(url)]
 
 def get_all_sentence_pairs(urls):
     sentence_pairs = []
@@ -71,8 +70,6 @@ def get_all_sentence_pairs(urls):
         sentences = get_sentences(url)
         sentence_pairs += zip(sentences, sentences[1:])
 
-    # Remove pairs containing filter words
-    sentence_pairs = [(line, response) for (line, response) in sentence_pairs if filter(line) and filter(response)]
     return sentence_pairs
 
 
@@ -82,9 +79,8 @@ if __name__ == '__main__':
     args = parser.parse_args()
     urls = get_all_pirate_movie_urls()
     text = ""
-        
+
     if args.pairs:
-        print "pairs"
         sentence_pairs = get_all_sentence_pairs(urls)
 
         # Combine Q/A pairs in tab-delimted format
@@ -92,7 +88,6 @@ if __name__ == '__main__':
         for line, response in sentence_pairs:
             text += '{}\t{}\n'.format(line, response)
     else:
-        print "not pairs"
         sentences = get_all_sentences(urls)
         text = '\n'.join(sentences)
 
