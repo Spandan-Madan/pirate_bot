@@ -59,17 +59,18 @@ def get_sentences(url):
     # Parse text into a list of sentences
     tokenizer = nltk.data.load('tokenizers/punkt/english.pickle')
     sentences = tokenizer.tokenize(text)
-    return sentences
+
+    title = re.search(r'<title>([^"]+) Movie Script', html).group(1)
+    return [(sentence, title) for sentence in sentences]
 
 def get_all_sentences(urls):
-    return [sentence for url in urls for sentence in get_sentences(url)]
+    return [(sentence, title) for url in urls for (sentence, title) in get_sentences(url)]
 
 def get_all_sentence_pairs(urls):
     sentence_pairs = []
     for url in urls:
         sentences = get_sentences(url)
         sentence_pairs += zip(sentences, sentences[1:])
-
     return sentence_pairs
 
 
@@ -89,7 +90,9 @@ if __name__ == '__main__':
             text += '{}\t{}\n'.format(line, response)
     else:
         sentences = get_all_sentences(urls)
-        text = '\n'.join(sentences)
+        text = ''
+        for sentence, title in sentences:
+            text += '{}\t{}\n'.format(sentence, title)
 
     # Write to text file
     filename = 'movie_line_pairs.txt' if args.pairs else 'movie_lines.txt'
